@@ -53,3 +53,30 @@ func GetSingleUser(c *fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "User Found", "data": user})
 }
+
+// Update a user
+func UpdateUser(c *fiber.Ctx) error {
+	db := database.DB.Db
+
+	type updateUser struct {
+		Username string `json:"username"`
+	}
+
+	var user model.User
+
+	id := c.Params("id")
+	db.Find(&user, "id = ?", id)
+
+	if user.ID == uuid.Nil {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "User not found", "data": nil})
+	}
+	var updateUserData updateUser
+	err := c.BodyParser(&updateUserData)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
+	}
+	user.Username = updateUserData.Username
+	db.Save(&user)
+
+	return c.Status(200).JSON(fiber.Map{"status": "success", "message": "users Found", "data": user})
+}
