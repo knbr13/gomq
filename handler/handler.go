@@ -4,6 +4,7 @@ import (
 	"github.com/abdullah-alaadine/basic-rest-api/database"
 	"github.com/abdullah-alaadine/basic-rest-api/model"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // Create a user
@@ -35,4 +36,20 @@ func GetAllUsers(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Users not found", "data": nil})
 	}
 	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "Users Found", "data": users})
+}
+
+// Get single user
+func GetSingleUser(c *fiber.Ctx) error {
+	db := database.DB.Db
+
+	// get id param
+	id := c.Params("id")
+
+	var user model.User
+
+	db.Find(&user, "id = ?", id)
+	if user.ID == uuid.Nil {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "User not found", "data": nil})
+	}
+	return c.Status(200).JSON(fiber.Map{"status": "sucess", "message": "User Found", "data": user})
 }
