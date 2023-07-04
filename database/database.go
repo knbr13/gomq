@@ -17,7 +17,7 @@ type DbInstance struct {
 var Database DbInstance
 
 func ConnectDb() {
-	dsn := "host=localhost user=postgres password=pwd123 dbname=gorm port=5432"
+	dsn := "host=localhost user=postgres password=fiber777! dbname=gorm port=5432"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to open database!\n", err)
