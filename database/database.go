@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/abdullah-alaadine/basic-rest-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -15,7 +16,7 @@ type DbInstance struct {
 
 var Database DbInstance
 
-func connect() {
+func ConnectDb() {
 	dsn := "host=localhost user=postgres password=pwd123 dbname=gorm port=5432"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -25,6 +26,8 @@ func connect() {
 
 	db.Logger = logger.Default.LogMode(logger.Info)
 	log.Println("Running Migrations")
-	// TODO: make migrations
+
+	db.AutoMigrate(&models.User{}, &models.Order{}, &models.Product{})
+
 	Database = DbInstance{Db: db}
 }
