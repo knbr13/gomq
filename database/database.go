@@ -26,4 +26,5 @@ func connect() {
 	db.Logger = logger.Default.LogMode(logger.Info)
 	log.Println("Running Migrations")
 	// TODO: make migrations
+	Database = DbInstance{Db: db}
 }
