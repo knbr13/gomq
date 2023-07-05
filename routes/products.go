@@ -61,3 +61,24 @@ func GetProducts(c *fiber.Ctx) error {
 		"products": productsResponse,
 	})
 }
+
+func GetProduct(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	var product models.Product
+	if err := database.Database.Db.First(&product, id).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	productResponse := CreateResponseProduct(&product)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"product": productResponse,
+	})
+}
