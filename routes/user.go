@@ -25,8 +25,7 @@ func CreateUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
-	database.Database.Db.Create(user)
+	database.Database.Db.Create(&user)
 	responseUser := CreateResponseUser(user)
-
 	return c.Status(fiber.StatusOK).JSON(responseUser)
 }
