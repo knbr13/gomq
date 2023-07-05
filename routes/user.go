@@ -55,11 +55,12 @@ func findUser(id int, user *models.User) error {
 func GetUser(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 
-	var user models.User
-
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
+
+	var user models.User
+
 	if err = findUser(id, &user); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
@@ -67,4 +68,28 @@ func GetUser(c *fiber.Ctx) error {
 	responseUser := CreateResponseUser(user)
 
 	return c.Status(fiber.StatusOK).JSON(responseUser)
+}
+
+func UpdateUser(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	var user models.User
+
+	if err = findUser(id, &user); err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	if err := c.BodyParser(&user); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	if err := database.Database.Db.Save(&user); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(err)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(user)
 }
