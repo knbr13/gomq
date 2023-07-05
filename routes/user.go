@@ -83,13 +83,23 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
-	if err := c.BodyParser(&user); err != nil {
+	type UpdateUser struct {
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+	}
+
+	var updateUser UpdateUser
+
+	if err := c.BodyParser(&updateUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
-	if err := database.Database.Db.Save(&user); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(err)
-	}
+	user.FirstName = updateUser.FirstName
+	user.LastName = updateUser.LastName
 
-	return c.Status(fiber.StatusOK).JSON(user)
+	database.Database.Db.Save(&user)
+
+	responseUser := CreateResponseUser(user)
+
+	return c.Status(fiber.StatusOK).JSON(responseUser)
 }
