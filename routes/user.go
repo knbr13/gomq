@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"errors"
+
 	"github.com/abdullah-alaadine/basic-rest-api/database"
 	"github.com/abdullah-alaadine/basic-rest-api/models"
 	"github.com/gofiber/fiber/v2"
@@ -40,4 +42,29 @@ func GetUsers(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(responseUsers)
+}
+
+func findUser(id int, user *models.User) error {
+	database.Database.Db.Find(user, "id = ?", id)
+	if user.ID == 0 {
+		return errors.New("user not found")
+	}
+	return nil
+}
+
+func GetUser(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	var user models.User
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+	if err = findUser(id, &user); err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(err.Error())
+	}
+
+	responseUser := CreateResponseUser(user)
+
+	return c.Status(fiber.StatusOK).JSON(responseUser)
 }
